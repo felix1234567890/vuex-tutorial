@@ -1,3 +1,5 @@
+import shop from "@/api/shop";
+
 export default {
   state: {
     items: [],
@@ -24,7 +26,7 @@ export default {
     }
   },
   actions: {
-    addProductToCart({ getters, state, commit, rootState }, product) {
+    addProductToCart({ getters, state, commit }, product) {
       if (getters.productInStock(product)) {
         const cartItem = state.items.find(item => item.id === product.id);
         if (!cartItem) {
