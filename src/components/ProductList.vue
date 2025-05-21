@@ -4,7 +4,7 @@
     <img v-if="loading" src="https://s3.amazonaws.com/ceblog/wp-content/uploads/2012/03/spinner-css3-animations.jpg" alt="">
     <ul>
       <li v-for="product in products" :key="product.id">
-        {{product.title}} - {{product.price}} - {{product.inventory}}
+        {{ product.title }} - {{ product.price }} - {{ product.inventory }}
         <button :disabled="!productIsInStock(product)" @click="addProductToCart(product)">Add to cart</button>
       </li>
     </ul>

@@ -3,12 +3,12 @@
     <h1>Shopping cart</h1>
     <ul>
       <li v-for="product in products" :key="product.id">
-        {{product.title}} - {{$currency(product.price)}} - {{product.quantity}}
+        {{ product.title }} - {{ $currency(product.price) }} - {{ product.quantity }}
       </li>
     </ul>
-    <p>Total: {{$currency(total)}}</p>
+    <p>Total: {{ $currency(total) }}</p>
     <button @click="checkout">Check out</button>
-    <p v-if="checkoutStatus">{{checkoutStatus}}</p>
+    <p v-if="checkoutStatus">{{ checkoutStatus }}</p>
   </div>
 </template>
 
