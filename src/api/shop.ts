@@ -1,4 +1,4 @@
-import type { Product } from '@/store/modules/products';
+import type { Product, CartItem, TransactionResult } from '@/types';
 
 /**
  * Mock product data
@@ -9,18 +9,6 @@ const _products: Product[] = [
   { id: 3, title: "Charli XCX - Sucker CD", price: 19.99, inventory: 5, image: "https://via.placeholder.com/200x150" },
   { id: 4, title: "Wireless Headphones", price: 99.99, inventory: 8, image: "https://via.placeholder.com/200x150" }
 ];
-
-interface CartItem {
-  id: number;
-  quantity: number;
-}
-
-interface TransactionResult {
-  success: true;
-  transaction: {
-    id: string;
-  };
-}
 
 /**
  * Simulates API delay
@@ -40,14 +28,6 @@ export default {
   async getProducts(): Promise<Product[]> {
     await delay(500); // Simulate network delay
     return [..._products]; // Return a copy to prevent mutation
-  },
-
-  /**
-   * Legacy method with callback for backward compatibility
-   * @param callback - Callback function
-   */
-  getProductsCallback(callback: (products: Product[]) => void): void {
-    setTimeout(() => callback([..._products]), 500);
   },
 
   /**
@@ -71,25 +51,5 @@ export default {
     } else {
       throw new Error('Checkout failed. Please try again.');
     }
-  },
-
-  /**
-   * Legacy method with callbacks for backward compatibility
-   * @param products - Products to buy
-   * @param successCallback - Success callback
-   * @param errorCallback - Error callback
-   */
-  buyProductsCallback(products: Product[], successCallback: () => void, errorCallback: () => void): void {
-    // Log the products being purchased (not used in this mock implementation)
-    if (products && products.length) {
-      console.log('Processing purchase for', products.length, 'items via callback');
-    }
-
-    setTimeout(() => {
-      // Simulate random checkout failure
-      Math.random() > 0.3 || navigator.userAgent.indexOf("PhantomJS") > -1
-        ? successCallback()
-        : errorCallback();
-    }, 500);
   }
 };

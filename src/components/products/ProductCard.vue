@@ -2,46 +2,42 @@
   <div class="product-card">
     <div class="product-image">
       <img
-        :src="product.image || 'https://via.placeholder.com/200x150'"
-        :alt="product.title"
+        :src="props.product.image || 'https://via.placeholder.com/200x150'"
+        :alt="props.product.title"
       >
     </div>
     <div class="product-details">
-      <h3>{{ product.title }}</h3>
+      <h3>{{ props.product.title }}</h3>
       <p class="product-price">
-        {{ $currency(product.price) }}
+        {{ currency(props.product.price) }}
       </p>
       <p class="product-inventory">
-        In stock: {{ product.inventory }}
+        In stock: {{ props.product.inventory }}
       </p>
       <button
         class="add-to-cart-button"
-        :disabled="!canAdd"
+        :disabled="!props.canAdd"
         @click="emit('add')"
       >
-        Add to cart
+        {{ props.canAdd ? 'Add to cart' : 'Out of Stock' }}
       </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  inventory: number;
-  image?: string;
+import type { Product } from '@/types';
+import { useCurrency } from '@/composables/useCurrency';
+
+interface Props {
+  product: Product;
+  canAdd: boolean;
 }
 
-defineProps({
-  product: { type: Object as () => Product, required: true },
-  canAdd: { type: Boolean, default: false }
-});
+const props = defineProps<Props>();
+const { currency } = useCurrency();
 
-const emit = defineEmits<{
-  (e: 'add'): void;
-}>();
+const emit = defineEmits(['add']);
 </script>
 
 <style scoped>
@@ -96,6 +92,7 @@ const emit = defineEmits<{
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 

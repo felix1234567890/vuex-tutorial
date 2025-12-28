@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
-import type { Product } from '@/store/modules/products';
+import type { Product } from '@/types';
 
 export function useProducts() {
   const store = useStore();

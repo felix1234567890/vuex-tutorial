@@ -1,32 +1,15 @@
 import shop from "@/api/shop";
+import type { CartItem, CartState, Product, CartProduct } from "@/types";
 
-interface CartItem {
-  id: number;
-  quantity: number;
-}
-
-interface CartState {
-  items: CartItem[];
-  checkoutStatus: string | null;
-}
-
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  inventory: number;
-  image?: string;
-}
-
-interface CartProduct {
-  id: number;
-  title: string;
-  price: number;
-  quantity: number;
+// Action context type for this module
+interface CartActionContext {
+  commit: (mutation: string, payload?: any, options?: { root?: boolean }) => void;
+  rootGetters: any;
+  state: CartState;
 }
 
 // Cart module with namespaced true for better encapsulation
-export default {
+const cartModule = {
   namespaced: true,
 
   state: (): CartState => ({
@@ -38,8 +21,8 @@ export default {
     /**
      * Get cart products with details from the products module
      */
-    cartProducts(state, getters, rootState): CartProduct[] {
-      return state.items.map(cartItem => {
+    cartProducts(state: CartState, _getters: any, rootState: any): CartProduct[] {
+      return state.items.map((cartItem: CartItem) => {
         const product = rootState.products.items.find(
           (product: Product) => product.id === cartItem.id
         );
@@ -59,7 +42,7 @@ export default {
     /**
      * Calculate the total price of all items in cart
      */
-    cartTotal(state, getters): number {
+    cartTotal(_state: CartState, getters: any): number {
       return getters.cartProducts.reduce(
         (total: number, product: CartProduct) => total + product.price * product.quantity,
         0
@@ -69,7 +52,7 @@ export default {
     /**
      * Get the number of items in cart
      */
-    cartItemCount(state): number {
+    cartItemCount(state: CartState): number {
       return state.items.reduce((count: number, item: CartItem) => count + item.quantity, 0);
     }
   },
@@ -78,7 +61,7 @@ export default {
     /**
      * Add a product to the cart
      */
-    addProductToCart({ rootGetters, state, commit }, product: Product) {
+    addProductToCart({ rootGetters, state, commit }: CartActionContext, product: Product) {
       // Check if product is in stock using the products module getter
       if (rootGetters['products/productIsInStock'](product)) {
         const cartItem = state.items.find((item: CartItem) => item.id === product.id);
@@ -99,7 +82,7 @@ export default {
     /**
      * Process checkout
      */
-    checkout({ state, commit }) {
+    async checkout({ state, commit }: CartActionContext) {
       const cartItems = [...state.items];
 
       // Set checkout status to 'processing'
@@ -108,16 +91,17 @@ export default {
       // Empty the cart
       commit("setCartItems", []);
 
-      // Call API to process the purchase
-      shop.buyProductsCallback(
-        cartItems,
-        () => commit("setCheckoutStatus", "success"),
-        () => {
-          commit("setCheckoutStatus", "failed");
-          // Restore cart items if checkout fails
-          commit("setCartItems", cartItems);
-        }
-      );
+      try {
+        // Call API to process the purchase
+        await shop.buyProducts(cartItems);
+        commit("setCheckoutStatus", "success");
+        console.log('Checkout successful for items:', cartItems);
+      } catch (error) {
+        console.error('Checkout failed:', error);
+        commit("setCheckoutStatus", "failed");
+        // Restore cart items if checkout fails
+        commit("setCartItems", cartItems);
+      }
     }
   },
 
@@ -135,15 +119,15 @@ export default {
     /**
      * Increment the quantity of an item in the cart
      */
-    incrementQuantity(state: CartState, cartItem: CartItem) {
+    incrementQuantity(_state: CartState, cartItem: CartItem) {
       cartItem.quantity++;
     },
 
     /**
      * Set the checkout status
      */
-    setCheckoutStatus(state: CartState, status: string) {
-      state.checkoutStatus = status;
+    setCheckoutStatus(_state: CartState, status: string) {
+      _state.checkoutStatus = status;
     },
 
     /**
@@ -154,3 +138,5 @@ export default {
     }
   }
 };
+
+export default cartModule;

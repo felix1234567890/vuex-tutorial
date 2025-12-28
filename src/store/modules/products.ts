@@ -1,21 +1,13 @@
 import shop from "@/api/shop";
+import type { Product, ProductsState } from "@/types";
 
-export interface Product {
-  id: number;
-  title: string;
-  price: number;
-  inventory: number;
-  image?: string;
-}
-
-interface ProductsState {
-  items: Product[];
-  loading: boolean;
-  error: string | null;
+// Action context type for this module
+interface ProductsActionContext {
+  commit: (mutation: string, payload?: any) => void;
 }
 
 // Products module with namespaced true for better encapsulation
-export default {
+const productsModule = {
   namespaced: true,
 
   state: (): ProductsState => ({
@@ -28,14 +20,14 @@ export default {
     /**
      * Get all products
      */
-    allProducts(state): Product[] {
+    allProducts(state: ProductsState): Product[] {
       return state.items;
     },
 
     /**
      * Get only products that are in stock
      */
-    availableProducts(state): Product[] {
+    availableProducts(state: ProductsState): Product[] {
       return state.items.filter(product => product.inventory > 0);
     },
 
@@ -49,7 +41,7 @@ export default {
     /**
      * Get a product by ID
      */
-    getProductById: (state) => (id: number): Product | null => {
+    getProductById: (state: ProductsState) => (id: number): Product | null => {
       return state.items.find(product => product.id === id) || null;
     }
   },
@@ -58,30 +50,27 @@ export default {
     /**
      * Fetch all products from the API
      */
-    fetchProducts({ commit }) {
+    async fetchProducts({ commit }: ProductsActionContext) {
       // Set loading state
       commit('setLoading', true);
       commit('setError', null);
 
-      return shop
-        .getProducts()
-        .then((products: Product[]) => {
-          commit('setProducts', products);
-          return products;
-        })
-        .catch((err: Error) => {
-          commit('setError', err.message || err);
-          throw err;
-        })
-        .finally(() => {
-          commit('setLoading', false);
-        });
+      try {
+        const products = await shop.getProducts();
+        commit('setProducts', products);
+        return products;
+      } catch (err: any) {
+        commit('setError', err.message || err);
+        throw err;
+      } finally {
+        commit('setLoading', false);
+      }
     },
 
     /**
      * Add a new product (example action)
      */
-    addProduct({ commit }, product: Product) {
+    addProduct({ commit }: ProductsActionContext, product: Product) {
       // In a real app, this would call an API
       commit('addProduct', product);
     }
@@ -127,3 +116,5 @@ export default {
     }
   }
 };
+
+export default productsModule;

@@ -2,7 +2,7 @@
   <div class="product-list">
     <div class="product-list-header">
       <h2>Product List</h2>
-      <p class="product-count" v-if="!loading && availableProducts.length > 0">
+      <p v-if="!loading && availableProducts.length > 0" class="product-count">
         {{ availableProducts.length }} products available
       </p>
     </div>
@@ -16,7 +16,7 @@
         v-for="product in availableProducts"
         :key="product.id"
         :product="product"
-        :canAdd="productIsInStock(product)"
+        :can-add="productIsInStock(product)"
         @add="addToCart(product)"
       />
     </div>

@@ -35,13 +35,13 @@
             {{ product.title }}
           </div>
           <div class="item-price">
-            {{ $currency(product.price) }}
+            {{ currency(product.price) }}
           </div>
           <div class="item-quantity">
             {{ product.quantity }}
           </div>
           <div class="item-total">
-            {{ $currency(product.price * product.quantity) }}
+            {{ currency(product.price * product.quantity) }}
           </div>
         </div>
       </div>
@@ -49,7 +49,7 @@
       <div class="cart-footer">
         <div class="cart-total">
           <span>Total:</span>
-          <span class="total-amount">{{ $currency(cartTotal) }}</span>
+          <span class="total-amount">{{ currency(cartTotal) }}</span>
         </div>
 
         <div class="checkout-section">
@@ -77,8 +77,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useStore } from 'vuex';
+import { useCurrency } from '@/composables/useCurrency';
 
 const store = useStore();
+const { currency } = useCurrency();
 
 // Computed properties
 const cartProducts = computed(() =>
@@ -87,10 +89,6 @@ const cartProducts = computed(() =>
 
 const cartTotal = computed(() =>
   store.getters['cart/cartTotal']
-);
-
-const cartItemCount = computed(() =>
-  store.getters['cart/cartItemCount']
 );
 
 const checkoutStatus = computed(() =>

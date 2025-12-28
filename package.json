@@ -10,7 +10,6 @@
     "test": "jest --config jest.config.json"
   },
   "dependencies": {
-    "pinia": "^2.0.0",
     "vue": "^3.0.0",
     "vuex": "^4.0.0"
   },

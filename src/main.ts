@@ -1,11 +1,8 @@
 import { createApp } from "vue";
 import App from "./App.vue";
-import store from "./store/index.ts"; // This will be updated later if store creation changes
-import { currency } from "../currency";
+import store from "./store/index.ts";
 
 const app = createApp(App);
-
-app.config.globalProperties.$currency = currency;
 
 app.use(store);
 app.mount("#app");
