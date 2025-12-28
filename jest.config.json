@@ -1,0 +1,25 @@
+{
+  "testEnvironment": "jsdom",
+  "testEnvironmentOptions": {
+    "customExportConditions": ["node", "node-addons"]
+  },
+  "moduleFileExtensions": ["js", "ts", "vue"],
+  "testMatch": ["**/tests/**/*.spec.js"],
+  "transform": {
+    "^.+\\.js$": ["babel-jest", { "presets": [["@babel/preset-env", { "targets": { "node": "current" } }]] }],
+    "^.+\\.ts$": ["ts-jest", {
+      "tsconfig": {
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true
+      }
+    }],
+    "^.+\\.vue$": "@vue/vue3-jest"
+  },
+  "moduleNameMapper": {
+    "^@/(.*)$": "<rootDir>/src/$1"
+  },
+  "transformIgnorePatterns": [
+    "node_modules/(?!(pinia|@vue)/)"
+  ],
+  "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"]
+}
